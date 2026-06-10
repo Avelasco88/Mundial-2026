@@ -707,7 +707,7 @@ function fmtPub(iso){
 }
 async function bootstrap(){
   try{
-    const r = await fetch('resultados.json?v=' + Date.now(), {cache:'no-store'});
+    const r = await fetch('https://gist.githubusercontent.com/Avelasco88/77035f6e000694efa8932366e5a730b6/raw/gistfile1.txt?v=' + Date.now(), {cache:'no-store'});
     if(r.ok) published = await r.json();
   }catch(e){ /* file:// o sin archivo publicado: modo local */ }
   if(published && published.scores){

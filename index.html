@@ -627,19 +627,44 @@ function persistAndRefresh(msg){
 }
 
 /* ================= Acciones admin ================= */
-function publishJSON(){
+async function publishJSON() {
+  const GIST_ID = '77035f6e000694efa8932366e5a730b6'; // Tu ID de Gist
+  const TOKEN = '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'; 
+
   const pub = new Date().toISOString();
-  const out = {pub, scores: state.scores, thirdOvr: state.thirdOvr};
-  const blob = new Blob([JSON.stringify(out)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'resultados.json';
-  a.click(); URL.revokeObjectURL(a.href);
-  state.mod = pub; saveState();
-  published = out;
-  const fin = Object.keys(out.scores).filter(k=>isFin(+k)).length;
-  setPubInfo('Marcadores oficiales · última actualización: ' + fmtPub(pub) + ' · ' + fin + ' de 104 partidos capturados');
-  toast('resultados.json generado: súbelo al host junto al HTML (reemplaza el anterior)');
+  const dataToUpload = {
+    pub: pub,
+    scores: state.scores,
+    thirdOvr: state.thirdOvr
+  };
+
+  try {
+    const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `token ${TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        files: {
+          'resultados.json': { content: JSON.stringify(dataToUpload, null, 2) }
+        }
+      })
+    });
+
+    if (response.ok) {
+      state.mod = pub;
+      saveState();
+      setPubInfo('Marcadores guardados en Gist · ' + fmtPub(pub));
+      toast('¡Resultados actualizados automáticamente!');
+    } else {
+      const err = await response.json();
+      console.error(err);
+      toast('Error al guardar en Gist: ' + err.message);
+    }
+  } catch (err) {
+    toast('Error de conexión con GitHub');
+  }
 }
 function exportJSON(){
   const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});

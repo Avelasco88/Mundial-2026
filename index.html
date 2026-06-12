@@ -175,6 +175,52 @@ select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size
   .amatch .tn.away{justify-content:flex-start}
   .amatch .actions{align-items:flex-start;flex-direction:row;flex-wrap:wrap}
 }
+
+/* ===== Phase tabs ===== */
+.phase-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;border-bottom:2px solid var(--line);padding-bottom:8px}
+.phase-tabs button{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--card);border:1px solid var(--line);color:var(--muted);padding:6px 14px;border-radius:8px 8px 0 0;cursor:pointer;transition:background .12s,color .12s;position:relative}
+.phase-tabs button:hover{background:var(--paper);color:var(--pitch)}
+.phase-tabs button.on{background:var(--pitch);color:#fff;border-color:var(--pitch)}
+.phase-tabs button.has-live::after{content:'';position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--ca)}
+
+/* ===== Match cards fase ===== */
+.phase-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.pcard.fin{border-left:3px solid var(--mx)}
+.pcard .ptop{display:flex;align-items:stretch;gap:4px}
+.pcard .pteam{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;min-width:0}
+.pcard .pteam .flag{width:28px;height:19px}
+.pcard .pteam .tname{font-size:12px;font-weight:700;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.pcard .pteam .pname{font-size:10px;color:var(--us);font-weight:600;letter-spacing:.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.pcard .pteam .pname.empty{color:transparent}
+.pcard .pmid{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:54px;padding:0 4px}
+.pcard .pmid .sc{font-family:'Barlow Condensed';font-weight:800;font-size:22px;color:var(--pitch);white-space:nowrap}
+.pcard .pmid .sc.pend{color:#C0C8BF;font-size:16px;font-weight:600}
+.pcard .pmid .penm{font-size:10px;font-weight:700;color:var(--us)}
+.pcard .pmeta{margin-top:6px;font-size:10px;color:var(--muted);text-align:center;border-top:1px solid var(--line);padding-top:5px}
+.pcard .pgrp{font-size:9px;font-family:'Barlow Condensed';letter-spacing:.1em;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:2px}
+
+/* ===== Nombre participante en tabla grupos ===== */
+.pname-row{font-size:10px;color:var(--us);font-weight:600;letter-spacing:.02em}
+
+/* ===== Admin: grid participantes ===== */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:10px}
+.pitem{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 10px;display:flex;align-items:center;gap:8px;font-size:13px}
+.pitem .pnum{font-family:'Barlow Condensed';font-size:11px;font-weight:700;color:var(--muted);min-width:16px}
+.pitem .ptxt{flex:1;min-width:0}
+.pitem .ptxt .en{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pitem .ptxt .pval{font-size:11px;color:var(--us);font-weight:600}
+.pitem .ptxt .pval.empty{color:var(--line);font-style:italic}
+.pgrphdr{font-family:'Barlow Condensed';font-size:15px;font-weight:700;color:var(--pitch);letter-spacing:.08em;text-transform:uppercase;margin:14px 0 6px;border-bottom:1px solid var(--line);padding-bottom:3px}
+
+/* ===== Admin: API key field ===== */
+.apirow{display:flex;align-items:center;gap:8px;background:#F0F4F2;border:1px solid #C5D8CB;border-radius:8px;padding:8px 12px;margin-bottom:10px;flex-wrap:wrap}
+.apirow label{font-size:12px;font-weight:700;color:var(--pitch);white-space:nowrap}
+.apirow input{flex:1;min-width:200px;font-family:monospace;font-size:12px;padding:5px 8px;border:1px solid var(--line);border-radius:6px}
+.apirow .anote{font-size:11px;color:var(--muted);width:100%}
+
+/* ===== Butterfly: participant name ===== */
+.bm .tline .pn{font-size:9px;color:var(--us);font-weight:600;letter-spacing:.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;margin-left:2px}
 </style>
 </head>
 <body>
@@ -187,8 +233,8 @@ select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size
     </div>
     <nav id="nav">
       <button data-v="grupos" class="on">Grupos</button>
+      <button data-v="partidos">Partidos</button>
       <button data-v="mariposa">Eliminatorias</button>
-      <button data-v="cal">Calendario</button>
       <button data-v="admin">⚙ Admin</button>
     </nav>
   </div>
@@ -211,8 +257,9 @@ select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size
     <div class="bwrap"><div class="butterfly" id="butterfly"></div></div>
   </section>
 
-  <section class="view" id="v-cal">
-    <div id="callist"></div>
+  <section class="view" id="v-partidos">
+    <div class="phase-tabs" id="phasetabs"></div>
+    <div id="phasecontent"></div>
   </section>
 
   <section class="view" id="v-admin">
@@ -225,12 +272,81 @@ select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size
 const DATA = {"teams":{"1":{"id":"1","n":"México","c":"MEX","iso":"mx","g":"A"},"2":{"id":"2","n":"Sudáfrica","c":"RSA","iso":"za","g":"A"},"3":{"id":"3","n":"Corea del Sur","c":"KOR","iso":"kr","g":"A"},"4":{"id":"4","n":"Chequia","c":"CZE","iso":"cz","g":"A"},"5":{"id":"5","n":"Canadá","c":"CAN","iso":"ca","g":"B"},"6":{"id":"6","n":"Bosnia y Herzegovina","c":"BIH","iso":"ba","g":"B"},"7":{"id":"7","n":"Catar","c":"QAT","iso":"qa","g":"B"},"8":{"id":"8","n":"Suiza","c":"SUI","iso":"ch","g":"B"},"9":{"id":"9","n":"Brasil","c":"BRA","iso":"br","g":"C"},"10":{"id":"10","n":"Marruecos","c":"MAR","iso":"ma","g":"C"},"11":{"id":"11","n":"Haití","c":"HAI","iso":"ht","g":"C"},"12":{"id":"12","n":"Escocia","c":"SCO","iso":"gb-sct","g":"C"},"13":{"id":"13","n":"Estados Unidos","c":"USA","iso":"us","g":"D"},"14":{"id":"14","n":"Paraguay","c":"PAR","iso":"py","g":"D"},"15":{"id":"15","n":"Australia","c":"AUS","iso":"au","g":"D"},"16":{"id":"16","n":"Turquía","c":"TUR","iso":"tr","g":"D"},"17":{"id":"17","n":"Alemania","c":"GER","iso":"de","g":"E"},"18":{"id":"18","n":"Curazao","c":"CUW","iso":"cw","g":"E"},"19":{"id":"19","n":"Costa de Marfil","c":"CIV","iso":"ci","g":"E"},"20":{"id":"20","n":"Ecuador","c":"ECU","iso":"ec","g":"E"},"21":{"id":"21","n":"Países Bajos","c":"NED","iso":"nl","g":"F"},"22":{"id":"22","n":"Japón","c":"JPN","iso":"jp","g":"F"},"23":{"id":"23","n":"Suecia","c":"SWE","iso":"se","g":"F"},"24":{"id":"24","n":"Túnez","c":"TUN","iso":"tn","g":"F"},"25":{"id":"25","n":"Bélgica","c":"BEL","iso":"be","g":"G"},"26":{"id":"26","n":"Egipto","c":"EGY","iso":"eg","g":"G"},"27":{"id":"27","n":"Irán","c":"IRN","iso":"ir","g":"G"},"28":{"id":"28","n":"Nueva Zelanda","c":"NZL","iso":"nz","g":"G"},"29":{"id":"29","n":"España","c":"ESP","iso":"es","g":"H"},"30":{"id":"30","n":"Cabo Verde","c":"CPV","iso":"cv","g":"H"},"31":{"id":"31","n":"Arabia Saudita","c":"KSA","iso":"sa","g":"H"},"32":{"id":"32","n":"Uruguay","c":"URU","iso":"uy","g":"H"},"33":{"id":"33","n":"Francia","c":"FRA","iso":"fr","g":"I"},"34":{"id":"34","n":"Senegal","c":"SEN","iso":"sn","g":"I"},"35":{"id":"35","n":"Irak","c":"IRQ","iso":"iq","g":"I"},"36":{"id":"36","n":"Noruega","c":"NOR","iso":"no","g":"I"},"37":{"id":"37","n":"Argentina","c":"ARG","iso":"ar","g":"J"},"38":{"id":"38","n":"Argelia","c":"ALG","iso":"dz","g":"J"},"39":{"id":"39","n":"Austria","c":"AUT","iso":"at","g":"J"},"40":{"id":"40","n":"Jordania","c":"JOR","iso":"jo","g":"J"},"41":{"id":"41","n":"Portugal","c":"POR","iso":"pt","g":"K"},"42":{"id":"42","n":"RD Congo","c":"COD","iso":"cd","g":"K"},"43":{"id":"43","n":"Uzbekistán","c":"UZB","iso":"uz","g":"K"},"44":{"id":"44","n":"Colombia","c":"COL","iso":"co","g":"K"},"45":{"id":"45","n":"Inglaterra","c":"ENG","iso":"gb-eng","g":"L"},"46":{"id":"46","n":"Croacia","c":"CRO","iso":"hr","g":"L"},"47":{"id":"47","n":"Ghana","c":"GHA","iso":"gh","g":"L"},"48":{"id":"48","n":"Panamá","c":"PAN","iso":"pa","g":"L"}},"stadiums":{"1":{"n":"Estadio Azteca","city":"Mexico City","co":"Mexico"},"2":{"n":"Estadio Akron","city":"Zapopan","co":"Mexico"},"3":{"n":"Estadio BBVA","city":"Monterrey (Guadalupe)","co":"Mexico"},"4":{"n":"AT&T Stadium","city":"Dallas (Arlington, Texas)","co":"United States"},"5":{"n":"NRG Stadium","city":"Houston","co":"United States"},"6":{"n":"GEHA Field at Arrowhead Stadium","city":"Kansas City","co":"United States"},"7":{"n":"Mercedes-Benz Stadium","city":"Atlanta","co":"United States"},"8":{"n":"Hard Rock Stadium","city":"Miami (Miami Gardens)","co":"United States"},"9":{"n":"Gillette Stadium","city":"Boston (Foxborough)","co":"United States"},"10":{"n":"Lincoln Financial Field","city":"Philadelphia","co":"United States"},"11":{"n":"MetLife Stadium","city":"New York/New Jersey (East Rutherford)","co":"United States"},"12":{"n":"BMO Field","city":"Toronto","co":"Canada"},"13":{"n":"BC Place","city":"Vancouver","co":"Canada"},"14":{"n":"Lumen Field","city":"Seattle","co":"United States"},"15":{"n":"Levi's Stadium","city":"San Francisco Bay Area (Santa Clara)","co":"United States"},"16":{"n":"SoFi Stadium","city":"Los Angeles (Inglewood)","co":"United States"}},"matches":[{"id":1,"h":"1","a":"2","grp":"A","md":1,"date":"06/11/2026 13:00","st":"1","type":"group"},{"id":2,"h":"3","a":"4","grp":"A","md":1,"date":"06/11/2026 20:00","st":"2","type":"group"},{"id":3,"h":"5","a":"6","grp":"B","md":1,"date":"06/12/2026 15:00","st":"12","type":"group"},{"id":4,"h":"13","a":"14","grp":"D","md":1,"date":"06/12/2026 18:00","st":"16","type":"group"},{"id":5,"h":"11","a":"12","grp":"C","md":1,"date":"06/13/2026 21:00","st":"9","type":"group"},{"id":6,"h":"15","a":"16","grp":"D","md":1,"date":"06/13/2026 21:00","st":"13","type":"group"},{"id":7,"h":"9","a":"10","grp":"C","md":1,"date":"06/13/2026 18:00","st":"11","type":"group"},{"id":8,"h":"7","a":"8","grp":"B","md":1,"date":"06/13/2026 12:00","st":"15","type":"group"},{"id":9,"h":"19","a":"20","grp":"E","md":1,"date":"06/14/2026 19:00","st":"10","type":"group"},{"id":10,"h":"17","a":"18","grp":"E","md":1,"date":"06/14/2026 12:00","st":"5","type":"group"},{"id":11,"h":"21","a":"22","grp":"F","md":1,"date":"06/14/2026 15:00","st":"4","type":"group"},{"id":12,"h":"23","a":"24","grp":"F","md":1,"date":"06/14/2026 20:00","st":"3","type":"group"},{"id":13,"h":"27","a":"28","grp":"G","md":1,"date":"06/15/2026 18:00","st":"16","type":"group"},{"id":14,"h":"29","a":"30","grp":"H","md":1,"date":"06/15/2026 12:00","st":"7","type":"group"},{"id":15,"h":"25","a":"26","grp":"G","md":1,"date":"06/15/2026 12:00","st":"14","type":"group"},{"id":16,"h":"31","a":"32","grp":"H","md":1,"date":"06/15/2026 18:00","st":"8","type":"group"},{"id":17,"h":"33","a":"34","grp":"I","md":1,"date":"06/16/2026 15:00","st":"11","type":"group"},{"id":18,"h":"35","a":"36","grp":"I","md":1,"date":"06/16/2026 18:00","st":"9","type":"group"},{"id":19,"h":"37","a":"38","grp":"J","md":1,"date":"06/16/2026 20:00","st":"6","type":"group"},{"id":20,"h":"39","a":"40","grp":"J","md":1,"date":"06/16/2026 21:00","st":"15","type":"group"},{"id":21,"h":"41","a":"42","grp":"K","md":1,"date":"06/17/2026 12:00","st":"5","type":"group"},{"id":22,"h":"45","a":"46","grp":"L","md":1,"date":"06/17/2026 15:00","st":"4","type":"group"},{"id":23,"h":"43","a":"44","grp":"K","md":1,"date":"06/17/2026 20:00","st":"1","type":"group"},{"id":24,"h":"47","a":"48","grp":"L","md":1,"date":"06/17/2026 19:00","st":"12","type":"group"},{"id":25,"h":"1","a":"3","grp":"A","md":2,"date":"06/18/2026 19:00","st":"2","type":"group"},{"id":26,"h":"8","a":"6","grp":"B","md":2,"date":"06/18/2026 12:00","st":"16","type":"group"},{"id":27,"h":"5","a":"7","grp":"B","md":2,"date":"06/18/2026 15:00","st":"13","type":"group"},{"id":28,"h":"4","a":"2","grp":"A","md":2,"date":"06/18/2026 12:00","st":"7","type":"group"},{"id":29,"h":"9","a":"11","grp":"C","md":2,"date":"06/19/2026 21:00","st":"10","type":"group"},{"id":30,"h":"12","a":"10","grp":"C","md":2,"date":"06/19/2026 18:00","st":"9","type":"group"},{"id":31,"h":"13","a":"15","grp":"D","md":2,"date":"06/19/2026 12:00","st":"14","type":"group"},{"id":32,"h":"16","a":"14","grp":"D","md":2,"date":"06/19/2026 20:00","st":"15","type":"group"},{"id":33,"h":"17","a":"19","grp":"E","md":2,"date":"06/20/2026 16:00","st":"12","type":"group"},{"id":34,"h":"20","a":"18","grp":"E","md":2,"date":"06/20/2026 19:00","st":"6","type":"group"},{"id":35,"h":"21","a":"23","grp":"F","md":2,"date":"06/20/2026 12:00","st":"5","type":"group"},{"id":36,"h":"24","a":"22","grp":"F","md":2,"date":"06/20/2026 22:00","st":"3","type":"group"},{"id":37,"h":"25","a":"27","grp":"G","md":2,"date":"06/21/2026 12:00","st":"16","type":"group"},{"id":38,"h":"28","a":"26","grp":"G","md":2,"date":"06/21/2026 18:00","st":"13","type":"group"},{"id":39,"h":"29","a":"31","grp":"H","md":2,"date":"06/21/2026 12:00","st":"7","type":"group"},{"id":40,"h":"32","a":"30","grp":"H","md":2,"date":"06/21/2026 18:00","st":"8","type":"group"},{"id":41,"h":"33","a":"35","grp":"I","md":2,"date":"06/22/2026 17:00","st":"10","type":"group"},{"id":42,"h":"36","a":"34","grp":"I","md":2,"date":"06/22/2026 20:00","st":"11","type":"group"},{"id":43,"h":"37","a":"39","grp":"J","md":2,"date":"06/22/2026 12:00","st":"4","type":"group"},{"id":44,"h":"40","a":"38","grp":"J","md":2,"date":"06/22/2026 20:00","st":"15","type":"group"},{"id":45,"h":"41","a":"43","grp":"K","md":2,"date":"06/23/2026 12:00","st":"5","type":"group"},{"id":46,"h":"48","a":"46","grp":"L","md":2,"date":"06/23/2026 19:00","st":"12","type":"group"},{"id":47,"h":"44","a":"42","grp":"K","md":2,"date":"06/23/2026 20:00","st":"2","type":"group"},{"id":48,"h":"45","a":"47","grp":"L","md":2,"date":"06/23/2026 16:00","st":"9","type":"group"},{"id":49,"h":"12","a":"9","grp":"C","md":3,"date":"06/24/2026 18:00","st":"8","type":"group"},{"id":50,"h":"10","a":"11","grp":"C","md":3,"date":"06/24/2026 18:00","st":"7","type":"group"},{"id":51,"h":"2","a":"3","grp":"A","md":3,"date":"06/24/2026 19:00","st":"3","type":"group"},{"id":52,"h":"4","a":"1","grp":"A","md":3,"date":"06/24/2026 19:00","st":"1","type":"group"},{"id":53,"h":"6","a":"7","grp":"B","md":3,"date":"06/24/2026 12:00","st":"14","type":"group"},{"id":54,"h":"8","a":"5","grp":"B","md":3,"date":"06/24/2026 12:00","st":"13","type":"group"},{"id":55,"h":"18","a":"19","grp":"E","md":3,"date":"06/25/2026 16:00","st":"10","type":"group"},{"id":56,"h":"20","a":"17","grp":"E","md":3,"date":"06/25/2026 16:00","st":"11","type":"group"},{"id":57,"h":"14","a":"15","grp":"D","md":3,"date":"06/25/2026 19:00","st":"15","type":"group"},{"id":58,"h":"16","a":"13","grp":"D","md":3,"date":"06/25/2026 19:00","st":"16","type":"group"},{"id":59,"h":"22","a":"23","grp":"F","md":3,"date":"06/25/2026 18:00","st":"4","type":"group"},{"id":60,"h":"24","a":"21","grp":"F","md":3,"date":"06/25/2026 18:00","st":"6","type":"group"},{"id":61,"h":"34","a":"35","grp":"I","md":3,"date":"06/26/2026 15:00","st":"12","type":"group"},{"id":62,"h":"36","a":"33","grp":"I","md":3,"date":"06/26/2026 15:00","st":"9","type":"group"},{"id":63,"h":"26","a":"27","grp":"G","md":3,"date":"06/26/2026 20:00","st":"14","type":"group"},{"id":64,"h":"28","a":"25","grp":"G","md":3,"date":"06/26/2026 20:00","st":"13","type":"group"},{"id":65,"h":"30","a":"31","grp":"H","md":3,"date":"06/26/2026 19:00","st":"5","type":"group"},{"id":66,"h":"32","a":"29","grp":"H","md":3,"date":"06/26/2026 18:00","st":"2","type":"group"},{"id":67,"h":"48","a":"45","grp":"L","md":3,"date":"06/27/2026 17:00","st":"11","type":"group"},{"id":68,"h":"46","a":"47","grp":"L","md":3,"date":"06/27/2026 17:00","st":"10","type":"group"},{"id":69,"h":"38","a":"39","grp":"J","md":3,"date":"06/27/2026 21:00","st":"6","type":"group"},{"id":70,"h":"40","a":"37","grp":"J","md":3,"date":"06/27/2026 21:00","st":"4","type":"group"},{"id":71,"h":"44","a":"41","grp":"K","md":3,"date":"06/27/2026 19:30","st":"8","type":"group"},{"id":72,"h":"42","a":"43","grp":"K","md":3,"date":"06/27/2026 19:30","st":"7","type":"group"},{"id":73,"h":null,"a":null,"grp":"R32","md":4,"date":"06/28/2026 12:00","st":"16","type":"r32","hl":"2° Grupo A","al":"2° Grupo B","hlr":"Runner-up Group A","alr":"Runner-up Group B"},{"id":74,"h":null,"a":null,"grp":"R32","md":4,"date":"06/29/2026 16:30","st":"9","type":"r32","hl":"1° Grupo E","al":"3° de A/B/C/D/F","hlr":"Winner Group E","alr":"3rd Group A/B/C/D/F"},{"id":75,"h":null,"a":null,"grp":"R32","md":4,"date":"06/29/2026 19:00","st":"3","type":"r32","hl":"1° Grupo F","al":"2° Grupo C","hlr":"Winner Group F","alr":"Runner-up Group C"},{"id":76,"h":null,"a":null,"grp":"R32","md":4,"date":"06/29/2026 12:00","st":"5","type":"r32","hl":"1° Grupo C","al":"2° Grupo F","hlr":"Winner Group C","alr":"Runner-up Group F"},{"id":77,"h":null,"a":null,"grp":"R32","md":4,"date":"06/30/2026 17:00","st":"11","type":"r32","hl":"1° Grupo I","al":"3° de C/D/F/G/H","hlr":"Winner Group I","alr":"3rd Group C/D/F/G/H"},{"id":78,"h":null,"a":null,"grp":"R32","md":4,"date":"06/30/2026 12:00","st":"4","type":"r32","hl":"2° Grupo E","al":"2° Grupo I","hlr":"Runner-up Group E","alr":"Runner-up Group I"},{"id":79,"h":null,"a":null,"grp":"R32","md":4,"date":"06/30/2026 19:00","st":"1","type":"r32","hl":"1° Grupo A","al":"3° de C/E/F/H/I","hlr":"Winner Group A","alr":"3rd Group C/E/F/H/I"},{"id":80,"h":null,"a":null,"grp":"R32","md":4,"date":"07/01/2026 12:00","st":"7","type":"r32","hl":"1° Grupo L","al":"3° de E/H/I/J/K","hlr":"Winner Group L","alr":"3rd Group E/H/I/J/K"},{"id":81,"h":null,"a":null,"grp":"R32","md":4,"date":"07/01/2026 17:00","st":"15","type":"r32","hl":"1° Grupo D","al":"3° de B/E/F/I/J","hlr":"Winner Group D","alr":"3rd Group B/E/F/I/J"},{"id":82,"h":null,"a":null,"grp":"R32","md":4,"date":"07/01/2026 13:00","st":"14","type":"r32","hl":"1° Grupo G","al":"3° de A/E/H/I/J","hlr":"Winner Group G","alr":"3rd Group A/E/H/I/J"},{"id":83,"h":null,"a":null,"grp":"R32","md":4,"date":"07/02/2026 19:00","st":"12","type":"r32","hl":"2° Grupo K","al":"2° Grupo L","hlr":"Runner-up Group K","alr":"Runner-up Group L"},{"id":84,"h":null,"a":null,"grp":"R32","md":4,"date":"07/02/2026 12:00","st":"16","type":"r32","hl":"1° Grupo H","al":"2° Grupo J","hlr":"Winner Group H","alr":"Runner-up Group J"},{"id":85,"h":null,"a":null,"grp":"R32","md":4,"date":"07/02/2026 20:00","st":"13","type":"r32","hl":"1° Grupo B","al":"3° de E/F/G/I/J","hlr":"Winner Group B","alr":"3rd Group E/F/G/I/J"},{"id":86,"h":null,"a":null,"grp":"R32","md":4,"date":"07/03/2026 18:00","st":"8","type":"r32","hl":"1° Grupo J","al":"2° Grupo H","hlr":"Winner Group J","alr":"Runner-up Group H"},{"id":87,"h":null,"a":null,"grp":"R32","md":4,"date":"07/03/2026 20:30","st":"6","type":"r32","hl":"1° Grupo K","al":"3° de D/E/I/J/L","hlr":"Winner Group K","alr":"3rd Group D/E/I/J/L"},{"id":88,"h":null,"a":null,"grp":"R32","md":4,"date":"07/03/2026 13:00","st":"4","type":"r32","hl":"2° Grupo D","al":"2° Grupo G","hlr":"Runner-up Group D","alr":"Runner-up Group G"},{"id":89,"h":null,"a":null,"grp":"R16","md":5,"date":"07/04/2026 17:00","st":"10","type":"r16","hl":"Ganador P 74","al":"Ganador P 77","hlr":"Winner Match 74","alr":"Winner Match 77"},{"id":90,"h":null,"a":null,"grp":"R16","md":5,"date":"07/04/2026 12:00","st":"5","type":"r16","hl":"Ganador P 73","al":"Ganador P 75","hlr":"Winner Match 73","alr":"Winner Match 75"},{"id":91,"h":null,"a":null,"grp":"R16","md":5,"date":"07/05/2026 16:00","st":"11","type":"r16","hl":"Ganador P 76","al":"Ganador P 78","hlr":"Winner Match 76","alr":"Winner Match 78"},{"id":92,"h":null,"a":null,"grp":"R16","md":5,"date":"07/05/2026 18:00","st":"1","type":"r16","hl":"Ganador P 79","al":"Ganador P 80","hlr":"Winner Match 79","alr":"Winner Match 80"},{"id":93,"h":null,"a":null,"grp":"R16","md":5,"date":"07/06/2026 14:00","st":"4","type":"r16","hl":"Ganador P 83","al":"Ganador P 84","hlr":"Winner Match 83","alr":"Winner Match 84"},{"id":94,"h":null,"a":null,"grp":"R16","md":5,"date":"07/06/2026 17:00","st":"14","type":"r16","hl":"Ganador P 81","al":"Ganador P 82","hlr":"Winner Match 81","alr":"Winner Match 82"},{"id":95,"h":null,"a":null,"grp":"R16","md":5,"date":"07/07/2026 12:00","st":"7","type":"r16","hl":"Ganador P 86","al":"Ganador P 88","hlr":"Winner Match 86","alr":"Winner Match 88"},{"id":96,"h":null,"a":null,"grp":"R16","md":5,"date":"07/07/2026 13:00","st":"13","type":"r16","hl":"Ganador P 85","al":"Ganador P 87","hlr":"Winner Match 85","alr":"Winner Match 87"},{"id":97,"h":null,"a":null,"grp":"QF","md":6,"date":"07/09/2026 16:00","st":"9","type":"qf","hl":"Ganador P 89","al":"Ganador P 90","hlr":"Winner Match 89","alr":"Winner Match 90"},{"id":98,"h":null,"a":null,"grp":"QF","md":6,"date":"07/10/2026 12:00","st":"16","type":"qf","hl":"Ganador P 93","al":"Ganador P 94","hlr":"Winner Match 93","alr":"Winner Match 94"},{"id":99,"h":null,"a":null,"grp":"QF","md":6,"date":"07/11/2026 17:00","st":"8","type":"qf","hl":"Ganador P 91","al":"Ganador P 92","hlr":"Winner Match 91","alr":"Winner Match 92"},{"id":100,"h":null,"a":null,"grp":"QF","md":6,"date":"07/11/2026 20:00","st":"6","type":"qf","hl":"Ganador P 95","al":"Ganador P 96","hlr":"Winner Match 95","alr":"Winner Match 96"},{"id":101,"h":null,"a":null,"grp":"SF","md":7,"date":"07/14/2026 14:00","st":"4","type":"sf","hl":"Ganador P 97","al":"Ganador P 98","hlr":"Winner Match 97","alr":"Winner Match 98"},{"id":102,"h":null,"a":null,"grp":"SF","md":7,"date":"07/15/2026 15:00","st":"7","type":"sf","hl":"Ganador P 99","al":"Ganador P 100","hlr":"Winner Match 99","alr":"Winner Match 100"},{"id":103,"h":null,"a":null,"grp":"3RD","md":8,"date":"07/18/2026 17:00","st":"8","type":"third","hl":"Perdedor P 101","al":"Perdedor P 102","hlr":"Loser Match 101","alr":"Loser Match 102"},{"id":104,"h":null,"a":null,"grp":"FINAL","md":9,"date":"07/19/2026 15:00","st":"11","type":"final","hl":"Ganador P 101","al":"Ganador P 102","hlr":"Winner Match 101","alr":"Winner Match 102"}]};
 // API key de football-data.org — queda visible en fuente del HTML.
 // Aceptable para uso interno; considera regenerarlo si el repo es público.
-const FDORG_KEY = 'a3e6e031ae3149ef9fe2f2efbab904e0';
+let FDORG_KEY = 'a3e6e031ae3149ef9fe2f2efbab904e0';
 const FDORG_URL = 'https://api.football-data.org/v4/competitions/WC/matches';
 const CACHE_KEY = 'wc26_api_cache_v1';
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
 /* ================= Estado y persistencia ================= */
+
+// ─── PARTICIPANTES DE LA QUINIELA ─────────────────────────────────────────────
+// 24 participantes · 2 equipos cada uno · 48 equipos asignados
+// Para cambiar un nombre: edita el valor entre comillas y sube el index.html
+const PARTICIPANTS = {
+  // ── Grupo A ──────────────────────────────────
+  "1":"Adriel",   // México
+  "2":"Beto G",   // Sudáfrica
+  "3":"Ashley",   // Corea del Sur
+  "4":"Mariana",  // Chequia
+  // ── Grupo B ──────────────────────────────────
+  "5":"Naim",     // Canadá
+  "6":"Adriel",   // Bosnia y Herzegovina
+  "7":"Sandra",   // Catar
+  "8":"Felipe",   // Suiza
+  // ── Grupo C ──────────────────────────────────
+  "9":"Cesar",    // Brasil
+  "10":"Juan",    // Marruecos
+  "11":"Remel",   // Haití
+  "12":"Sara",    // Escocia
+  // ── Grupo D ──────────────────────────────────
+  "13":"Javi",    // Estados Unidos
+  "14":"Beto V",  // Paraguay
+  "15":"Xochil",  // Australia
+  "16":"Juan",    // Turquía
+  // ── Grupo E ──────────────────────────────────
+  "17":"Carmen",  // Alemania
+  "18":"Carmen",  // Curazao
+  "19":"Xochil",  // Costa de Marfil
+  "20":"Eloy",    // Ecuador
+  // ── Grupo F ──────────────────────────────────
+  "21":"Felipe",  // Países Bajos
+  "22":"Omar",    // Japón
+  "23":"Arturo",  // Suecia
+  "24":"Beto V",  // Túnez
+  // ── Grupo G ──────────────────────────────────
+  "25":"Remel",   // Bélgica
+  "26":"Omar",    // Egipto
+  "27":"Jona",    // Irán
+  "28":"Toño",    // Nueva Zelanda
+  // ── Grupo H ──────────────────────────────────
+  "29":"Sandra",  // España
+  "30":"Erik",    // Cabo Verde
+  "31":"Beto G",  // Arabia Saudita
+  "32":"Mago",    // Uruguay
+  // ── Grupo I ──────────────────────────────────
+  "33":"Sara",    // Francia
+  "34":"Mimo",    // Senegal
+  "35":"Arturo",  // Irak
+  "36":"Ashley",  // Noruega
+  // ── Grupo J ──────────────────────────────────
+  "37":"Javi",    // Argentina
+  "38":"Cesar",   // Argelia
+  "39":"Mago",    // Austria
+  "40":"Ángel",   // Jordania
+  // ── Grupo K ──────────────────────────────────
+  "41":"Naim",    // Portugal
+  "42":"Erik",    // RD Congo
+  "43":"Toño",    // Uzbekistán
+  "44":"Ángel",   // Colombia
+  // ── Grupo L ──────────────────────────────────
+  "45":"Mimo",    // Inglaterra
+  "46":"Eloy",    // Croacia  ← lista decía Dinamarca; no clasificó al WC26 → asignado Croacia
+  "47":"Mariana", // Ghana
+  "48":"Jona",    // Panamá
+};
+function pName(teamId){ return teamId ? (PARTICIPANTS[String(teamId)] || '') : ''; }
+function pShort(teamId){ const n = pName(teamId); return n.length>9 ? n.split(' ')[0] : n; }
+// ─────────────────────────────────────────────────────────────────────────────
 // Mapeo de nombres football-data.org → nuestros team IDs
 const FDORG_MAP = {"Mexico":"1","South Africa":"2","South Korea":"3","Czech Republic":"4","Canada":"5","Canadá":"5","Bosnia and Herzegovina":"6","Qatar":"7","Switzerland":"8","Brazil":"9","Morocco":"10","Haiti":"11","Scotland":"12","United States":"13","Paraguay":"14","Australia":"15","Turkiye":"16","Türkiye":"16","Turkey":"16","Germany":"17","Curacao":"18","Curaçao":"18","Ivory Coast":"19","Côte d'Ivoire":"19","Ecuador":"20","Netherlands":"21","Japan":"22","Sweden":"23","Tunisia":"24","Belgium":"25","Egypt":"26","Iran":"27","New Zealand":"28","Spain":"29","Cape Verde":"30","Saudi Arabia":"31","Uruguay":"32","France":"33","Senegal":"34","Iraq":"35","Norway":"36","Argentina":"37","Algeria":"38","Austria":"39","Jordan":"40","Portugal":"41","DR Congo":"42","Congo DR":"42","Uzbekistan":"43","Colombia":"44","England":"45","Croatia":"46","Ghana":"47","Panama":"48"};
 const STAGE_MAP_API = {"GROUP_STAGE":"group","ROUND_OF_32":"r32","ROUND_OF_16":"r16","QUARTER_FINALS":"qf","SEMI_FINALS":"sf","THIRD_PLACE":"third","FINAL":"final"};
@@ -344,6 +460,10 @@ function flagImg(t){
   if(t && t.iso && t.iso!=='tbd') return `<img class="flag" src="https://flagcdn.com/w40/${t.iso}.png" alt="" onerror="this.outerHTML='<i class=&quot;flag ph&quot;></i>'">`;
   return '<i class="flag ph"></i>';
 }
+function pNameTag(teamId, cls='pname-row'){
+  const n = pName(teamId);
+  return n ? `<span class="${cls}">${n}</span>` : '';
+}
 function fmtDate(d){ // MM/DD/YYYY HH:mm → texto es
   const [dt,hm] = d.split(' '); const [mo,da] = dt.split('/');
   const mes = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][parseInt(mo)-1];
@@ -453,7 +573,7 @@ function renderGroups(){
     <table><tr><th></th><th class="tname">Equipo</th><th>PJ</th><th>DG</th><th>GF</th><th>Pts</th></tr>
     ${st.map((r,i)=>`<tr class="trow ${started?(i<2?'q1':i===2?'q3':''):''}">
       <td class="pos">${i+1}</td>
-      <td class="tname">${flagImg(r.t)}<span>${r.t.n}</span></td>
+      <td class="tname">${flagImg(r.t)}<div style="display:flex;flex-direction:column;min-width:0"><span>${r.t.n}</span>${pNameTag(r.t.id)}</div></td>
       <td>${r.pj}</td><td>${r.gf-r.gc>0?'+':''}${r.gf-r.gc}</td><td>${r.gf}</td><td class="pts">${r.pts}</td></tr>`).join('')}
     </table></div>`;
   }).join('');
@@ -461,11 +581,91 @@ function renderGroups(){
   document.getElementById('thirdstable').innerHTML =
     `<tr><th></th><th>Grupo</th><th class="tname">Equipo</th><th>PJ</th><th>DG</th><th>GF</th><th>Pts</th></tr>` +
     tr.map((r,i)=>`<tr class="${i<8?'qual':''}"><td class="pos">${i+1}</td><td><b>${r.g}</b></td>
-      <td class="tname">${flagImg(r.r.t)}<span>${r.r.t.n}</span></td>
+      <td class="tname">${flagImg(r.r.t)}<div style="display:flex;flex-direction:column;min-width:0"><span>${r.r.t.n}</span>${pNameTag(r.r.t.id)}</div></td>
       <td>${r.r.pj}</td><td>${r.r.gf-r.r.gc>0?'+':''}${r.r.gf-r.r.gc}</td><td>${r.r.gf}</td><td class="pts">${r.r.pts}</td></tr>`).join('');
 }
 
-/* ================= Render: Calendario ================= */
+
+/* ================= Render: Partidos por fase ================= */
+const PHASES = [
+  {k:'jornada1', t:'Jornada 1', types:['group'], md:1},
+  {k:'jornada2', t:'Jornada 2', types:['group'], md:2},
+  {k:'jornada3', t:'Jornada 3', types:['group'], md:3},
+  {k:'r32',      t:'16avos',   types:['r32']},
+  {k:'r16',      t:'8vos',     types:['r16']},
+  {k:'qf',       t:'4tos',     types:['qf']},
+  {k:'sf',       t:'Semis/Final', types:['sf','third','final']},
+];
+let activePhase = null;
+
+function detectActivePhase(){
+  // Avanzar al tab de la fase más reciente con datos
+  for(let i = PHASES.length-1; i >= 0; i--){
+    const ph = PHASES[i];
+    const ms = phaseMatches(ph);
+    if(ms.some(m=>isFin(m.id))) return ph.k;
+  }
+  return 'jornada1';
+}
+function phaseMatches(ph){
+  if(ph.md) return M.filter(m=>m.type==='group' && m.md===ph.md);
+  return M.filter(m=>ph.types.includes(m.type));
+}
+function phaseHasLive(ph){
+  return phaseMatches(ph).some(m=>{ const s=sc(m.id); return s && !s.fin && s.hs!=='' && s.hs!=null; });
+}
+function renderPartidos(forcePhase){
+  if(!activePhase) activePhase = detectActivePhase();
+  const cur = forcePhase || activePhase;
+  // Tabs
+  document.getElementById('phasetabs').innerHTML = PHASES.map(ph=>{
+    const live = phaseHasLive(ph);
+    return `<button data-ph="${ph.k}" class="${ph.k===cur?'on':''} ${live?'has-live':''}">${ph.t}</button>`;
+  }).join('');
+  document.querySelectorAll('#phasetabs button').forEach(b=>{
+    b.onclick = ()=>{ activePhase = b.dataset.ph; renderPartidos(); };
+  });
+  // Content
+  const ph = PHASES.find(p=>p.k===cur);
+  const ms = phaseMatches(ph);
+  // Para fase de grupos: organizar por grupo
+  if(ph.md){
+    const byGrp = {};
+    ms.forEach(m=>{ (byGrp[m.grp]=byGrp[m.grp]||[]).push(m); });
+    document.getElementById('phasecontent').innerHTML =
+      Object.keys(byGrp).sort().map(g=>`
+        <div style="margin-bottom:18px">
+          <div class="pgrphdr">Grupo ${g}</div>
+          <div class="phase-grid">${byGrp[g].map(phaseCard).join('')}</div>
+        </div>`).join('');
+  } else {
+    document.getElementById('phasecontent').innerHTML =
+      `<div class="phase-grid">${ms.map(phaseCard).join('')}</div>`;
+  }
+}
+function phaseCard(m){
+  const h = resolveTeam(m,'h'), a = resolveTeam(m,'a');
+  const s = sc(m.id), fin = isFin(m.id);
+  const st = S[m.st];
+  const pen = fin && s && s.pen
+    ? `<div class="penm">Pen: ${s.pen==='h'?(h?h.c:'L'):(a?a.c:'V')}</div>` : '';
+  const hn = h ? `${flagImg(h)}<div class="tname">${h.n}</div><div class="pname ${pName(h.id)?'':'empty'}">${pName(h.id)||'·'}</div>`
+                : `<div class="tname tbd" style="font-size:11px">${m.hl||'?'}</div><div class="pname empty">·</div>`;
+  const an = a ? `${flagImg(a)}<div class="tname">${a.n}</div><div class="pname ${pName(a.id)?'':'empty'}">${pName(a.id)||'·'}</div>`
+                : `<div class="tname tbd" style="font-size:11px">${m.al||'?'}</div><div class="pname empty">·</div>`;
+  return `<div class="pcard ${fin?'fin':''}">
+    <div class="pgrp" style="font-size:9px;font-family:'Barlow Condensed';font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">P${m.id}${m.grp?' · Grupo '+m.grp:''}</div>
+    <div class="ptop">
+      <div class="pteam">${hn}</div>
+      <div class="pmid">
+        <div class="sc ${fin?'':'pend'}">${fin? s.hs+' – '+s.as : 'vs'}</div>${pen}
+      </div>
+      <div class="pteam">${an}</div>
+    </div>
+    <div class="pmeta">${fmtDate(m.date)} · ${st.n}, ${st.city}</div>
+  </div>`;
+}
+/* ================= Render: Calendario (legacy) ================= */
 function renderCal(){
   const el = document.getElementById('callist');
   const phases = [
@@ -510,7 +710,8 @@ function bmCard(m, sideClass){
   const h = resolveTeam(m,'h'), a = resolveTeam(m,'a'), s = sc(m.id), fin = isFin(m.id);
   const w = fin ? winnerOf(m.id) : null;
   function line(t, lab, scv, isWin, isLose){
-    const nm = t ? `${flagImg(t)}<span class="nm">${t.n}</span>` : `<span class="nm tbd">${lab}</span>`;
+    const pn = t ? `<span class="pn">${pShort(t.id)}</span>` : '';
+    const nm = t ? `${flagImg(t)}<span class="nm">${t.n}</span>${pn}` : `<span class="nm tbd">${lab}</span>`;
     return `<div class="tline ${isWin?'win':''} ${isLose?'lose':''}">${nm}<span class="s">${fin?scv:''}</span></div>`;
   }
   return `<div class="bm ${sideClass}"><span class="mn">P${m.id}</span>
@@ -532,7 +733,8 @@ function renderButterfly(){
   const fh = resolveTeam(fm,'h'), fa = resolveTeam(fm,'a'), fs = sc(104), ffin = isFin(104);
   const champ = ffin ? winnerOf(104) : null;
   function fline(t, lab, scv, isW){
-    return `<div class="fline ${isW?'win':''}"><div class="nm">${t?flagImg(t)+'<span>'+t.n+'</span>':'<span class="tbd" style="color:#A9C7B8">'+lab+'</span>'}</div><div class="s">${ffin?scv:'–'}</div></div>`;
+    const pn = t ? `<span style="font-size:10px;color:#7FD6AC;font-weight:600;margin-left:4px">${pShort(t.id)}</span>` : '';
+    return `<div class="fline ${isW?'win':''}"><div class="nm">${t?flagImg(t)+'<span>'+t.n+'</span>'+pn:'<span class="tbd" style="color:#A9C7B8">'+lab+'</span>'}</div><div class="s">${ffin?scv:'–'}</div></div>`;
   }
   const th = resolveTeam(tm,'h'), ta = resolveTeam(tm,'a'), ts = sc(103), tfin = isFin(103);
   const stF = S[fm.st], stT = S[tm.st];
@@ -583,6 +785,12 @@ function renderAdmin(){
     {k:'qf',t:'Cuartos'},{k:'sf',t:'Semifinales'},{k:'third',t:'Tercer lugar'},{k:'final',t:'Final'}
   ];
   root.innerHTML = `
+    <div class="apirow">
+      <label>🔑 API Key football-data.org</label>
+      <input type="text" id="apikeyinp" value="${FDORG_KEY}" placeholder="32 caracteres hex" maxlength="40" autocomplete="off">
+      <button class="btn sec" id="bapply" style="white-space:nowrap">Aplicar y probar</button>
+      <span class="anote">Solo válido para esta sesión. Edita <code>const FDORG_KEY</code> en el HTML para cambio permanente.</span>
+    </div>
     <div class="abar">
       <select id="fphase">${phases.map(p=>`<option value="${p.k}">${p.t}</option>`).join('')}</select>
       <select id="fgroup"><option value="all">Todos los grupos</option>${groups.map(g=>`<option>${g}</option>`).join('')}</select>
@@ -596,7 +804,12 @@ function renderAdmin(){
       <button class="btn warn" id="brst">Borrar todo</button>
       <button class="btn" id="bout">Salir</button>
     </div>
-    <div class="ovr" style="background:#EDF4EF;border-color:#C5D8CB;color:#1E4D38;margin-bottom:10px"><b style="font-family:'Barlow Condensed';font-size:15px;letter-spacing:.06em;text-transform:uppercase">Panel de correcciones</b><br><span style="font-size:12px">Los resultados se cargan automáticamente desde football-data.org. Usa este panel solo para corregir penales que la API no haya resuelto correctamente o para ajustes manuales. Los cambios aquí se superponen a la API y persisten en tu navegador.</span></div><div id="ovrbox"></div>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:14px">
+      <b style="font-family:'Barlow Condensed';font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--pitch)">Participantes por equipo</b>
+      <span style="font-size:11px;color:var(--muted);margin-left:8px">Edita <code>PARTICIPANTS</code> en el HTML para actualizar nombres</span>
+      <div class="pgrid" id="pgrid_admin"></div>
+    </div>
+    <div id="ovrbox"></div>
     <div id="amlist"></div>`;
   document.getElementById('fphase').value = adminFilter.phase;
   document.getElementById('fgroup').value = adminFilter.group;
@@ -605,6 +818,17 @@ function renderAdmin(){
   document.getElementById('fgroup').onchange = e=>{adminFilter.group=e.target.value; renderAdminList();};
   document.getElementById('fpend').onchange = e=>{adminFilter.pend=e.target.checked; renderAdminList();};
   document.getElementById('bout').onclick = ()=>{ adminOk=false; renderAdmin(); };
+  // API key session override
+  document.getElementById('bapply').onclick = async ()=>{
+    const nk = document.getElementById('apikeyinp').value.trim();
+    if(!nk.match(/^[a-f0-9]{32}$/i)){ toast('El key debe tener 32 caracteres hexadecimales'); return; }
+    FDORG_KEY = nk;
+    try{
+      sessionStorage.removeItem(CACHE_KEY);
+      const matches = await fetchFromApi();
+      if(matches){ const c = applyApiMatches(matches); persistAndRefresh('Key aplicado · '+c+' partidos mapeados'); }
+    }catch(e){ toast('Error con el nuevo key: '+e.message); }
+  };
   document.getElementById('brefresh').onclick = async ()=>{
     try{
       sessionStorage.removeItem(CACHE_KEY);
@@ -618,6 +842,16 @@ function renderAdmin(){
   document.getElementById('bpwd').onclick = changePwd;
   document.getElementById('brst').onclick = resetAll;
   renderAdminList();
+  // Grid de participantes (siempre al entrar al admin)
+  const pg = document.getElementById('pgrid_admin');
+  if(pg){
+    pg.innerHTML = 'ABCDEFGHIJKL'.split('').map(g=>{
+      const ts = Object.values(T).filter(t=>t.g===g);
+      return '<div><div class="pgrphdr" style="margin-top:6px">Grupo '+g+'</div>'+
+        ts.map(t=>'<div class="pitem">'+flagImg(t)+'<div class="ptxt"><div class="en">'+t.n+'</div><div class="pval '+(pName(t.id)?'':'empty')+'">'+(pName(t.id)||'— sin asignar')+'</div></div></div>').join('')+
+      '</div>';
+    }).join('');
+  }
 }
 const adminFilter = {phase:'all', group:'all', pend:false};
 function renderAdminList(){
@@ -716,7 +950,8 @@ function bindAdminInputs(scope){
 function persistAndRefresh(msg){
   _thirdCache = null;
   saveState();
-  renderGroups(); renderCal(); renderButterfly();
+  renderGroups(); renderButterfly();
+  if(document.getElementById('v-partidos').classList.contains('on')) renderPartidos();
   if(document.getElementById('v-admin').classList.contains('on')) renderAdminList();
   if(msg) toast(msg);
 }
@@ -784,6 +1019,7 @@ document.getElementById('nav').addEventListener('click', e=>{
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
   document.getElementById('v-'+b.dataset.v).classList.add('on');
   if(b.dataset.v==='admin') renderAdmin();
+  if(b.dataset.v==='partidos'){ activePhase=null; renderPartidos(); }
 });
 /* ================= Carga de resultados desde football-data.org API ================= */
 function setPubInfo(msg, warn){
@@ -820,7 +1056,7 @@ async function fetchFromApi(){
 async function bootstrap(){
   if(!FDORG_KEY || !FDORG_KEY.match(/^[a-f0-9]{32}$/)){
     setPubInfo('⚠ Configura el API key de football-data.org en el código HTML', true);
-    renderGroups(); renderCal(); renderButterfly(); return;
+    renderGroups(); renderButterfly(); return;
   }
   try{
     const matches = await fetchFromApi();
@@ -830,7 +1066,8 @@ async function bootstrap(){
       const ovCount = Object.keys(state.overrides).length;
       const ovTxt = ovCount ? ' · ' + ovCount + ' override(s) manual(es)' : '';
       setPubInfo('🔴 Datos en vivo · ' + fmtNow() + ' · ' + fin + ' de 104 partidos finalizados' + ovTxt);
-      saveState(); renderGroups(); renderCal(); renderButterfly();
+      activePhase = null; saveState(); renderGroups(); renderButterfly();
+      if(document.getElementById('v-partidos').classList.contains('on')) renderPartidos();
     }
   } catch(err){
     // Sin conexión o API caída: usar lo que haya en localStorage
@@ -840,7 +1077,7 @@ async function bootstrap(){
     } else {
       setPubInfo('⚠ No se pudo conectar a football-data.org. Verifica el API key.', true);
     }
-    renderGroups(); renderCal(); renderButterfly();
+    renderGroups(); renderButterfly();
   }
 }
 bootstrap();

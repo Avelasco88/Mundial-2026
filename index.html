@@ -340,7 +340,7 @@ const PARTICIPANTS = {
   "44":"Ángel",   // Colombia
   // ── Grupo L ──────────────────────────────────
   "45":"Mimo",    // Inglaterra
-  "46":"Eloy",    // Croacia*
+  "46":"Eloy",    // Croacia  ← lista decía Dinamarca; no clasificó al WC26 → asignado Croacia
   "47":"Mariana", // Ghana
   "48":"Jona",    // Panamá
 };
@@ -789,7 +789,12 @@ function renderAdmin(){
       <label>🔑 API Key football-data.org</label>
       <input type="text" id="apikeyinp" value="${FDORG_KEY}" placeholder="32 caracteres hex" maxlength="40" autocomplete="off">
       <button class="btn sec" id="bapply" style="white-space:nowrap">Aplicar y probar</button>
+      <button class="btn sec" id="bdiag" style="white-space:nowrap">🩺 Diagnóstico</button>
       <span class="anote">Solo válido para esta sesión. Edita <code>const FDORG_KEY</code> en el HTML para cambio permanente.</span>
+    </div>
+    <div id="diagbox" style="display:none;background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:12px">
+      <b style="font-family:'Barlow Condensed';font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--pitch)">Resultado del diagnóstico</b>
+      <pre id="diagpre" style="margin-top:8px;white-space:pre-wrap;word-break:break-all;font-family:monospace;font-size:11px;color:var(--ink);line-height:1.6"></pre>
     </div>
     <div class="abar">
       <select id="fphase">${phases.map(p=>`<option value="${p.k}">${p.t}</option>`).join('')}</select>
@@ -819,6 +824,50 @@ function renderAdmin(){
   document.getElementById('fpend').onchange = e=>{adminFilter.pend=e.target.checked; renderAdminList();};
   document.getElementById('bout').onclick = ()=>{ adminOk=false; renderAdmin(); };
   // API key session override
+  document.getElementById('bdiag').onclick = async ()=>{
+    const box = document.getElementById('diagbox');
+    const pre = document.getElementById('diagpre');
+    box.style.display = 'block';
+    pre.textContent = 'Probando conexión…';
+    const key = document.getElementById('apikeyinp').value.trim();
+    const t0 = Date.now();
+    try{
+      const resp = await fetch('https://api.football-data.org/v4/competitions/WC/matches', {
+        headers:{'X-Auth-Token': key}, cache:'no-store'
+      });
+      const ms = Date.now()-t0;
+      let body = '';
+      try{ body = JSON.stringify(await resp.json(), null, 2); }catch(e){ body = await resp.text(); }
+      if(resp.ok){
+        const matches = JSON.parse(body);
+        const total = matches.matches?.length || 0;
+        const fin = matches.matches?.filter(m=>m.status==='FINISHED').length || 0;
+        pre.textContent = [
+          '✅ CONEXIÓN EXITOSA (' + ms + 'ms)',
+          '   Status: ' + resp.status + ' ' + resp.statusText,
+          '   Partidos recibidos: ' + total,
+          '   Finalizados: ' + fin,
+          '   Cabeceras relevantes:',
+          '     X-Requests-Available-Minute: ' + (resp.headers.get('X-Requests-Available-Minute')||'?'),
+          '     X-RequestCounter-Reset: ' + (resp.headers.get('X-RequestCounter-Reset')||'?'),
+        ].join('\n');
+      } else {
+        let hint = '';
+        if(resp.status===403) hint = '\n💡 HTTP 403 = sin acceso al Mundial.\n   El plan GRATUITO no incluye WC.\n   Activa el plan "Competition" en football-data.org (~€3/mes).';
+        if(resp.status===401) hint = '\n💡 HTTP 401 = key inválido o expirado.\n   Genera uno nuevo en football-data.org → My Account.';
+        if(resp.status===429) hint = '\n💡 HTTP 429 = demasiadas peticiones. Espera 1 minuto.';
+        if(resp.status===404) hint = '\n💡 HTTP 404 = competición "WC" no existe en la API.\n   Puede que el torneo aún no esté disponible.';
+        pre.textContent = '❌ ERROR HTTP ' + resp.status + ' (' + ms + 'ms)' + hint + '\n\nRespuesta del servidor:\n' + body.slice(0,500);
+      }
+    } catch(err){
+      const ms = Date.now()-t0;
+      let hint = '';
+      if(err.message.includes('fetch')||err.message.includes('CORS')){
+        hint = '\n💡 Error de red/CORS:\n   - Verifica que tienes internet\n   - football-data.org puede estar bloqueando requests desde el browser\n   - Intenta desde localhost en vez de GitHub Pages para aislar el problema';
+      }
+      pre.textContent = '❌ ERROR DE RED (' + ms + 'ms)\n   Tipo: ' + err.name + '\n   Mensaje: ' + err.message + hint;
+    }
+  };
   document.getElementById('bapply').onclick = async ()=>{
     const nk = document.getElementById('apikeyinp').value.trim();
     if(!nk.match(/^[a-f0-9]{32}$/i)){ toast('El key debe tener 32 caracteres hexadecimales'); return; }
@@ -1021,6 +1070,23 @@ document.getElementById('nav').addEventListener('click', e=>{
   if(b.dataset.v==='admin') renderAdmin();
   if(b.dataset.v==='partidos'){ activePhase=null; renderPartidos(); }
 });
+
+/* ================= Diagnóstico de errores de API ================= */
+function diagMsg(err){
+  if(!err) return 'Error desconocido';
+  const st = err.status;
+  if(!st){
+    // Sin status → fallo de red o CORS
+    if(err.message && err.message.toLowerCase().includes('fetch'))
+      return 'Error de red / CORS — el browser bloqueó la petición (ver Diagnóstico en Admin)';
+    return 'Error de red: ' + err.message;
+  }
+  if(st===401) return 'HTTP 401 — API key inválido o expirado';
+  if(st===403) return 'HTTP 403 — sin acceso al Mundial (WC); activa el plan Competition en football-data.org';
+  if(st===404) return 'HTTP 404 — competición "WC" no encontrada en la API';
+  if(st===429) return 'HTTP 429 — límite de peticiones excedido; espera unos minutos';
+  return 'HTTP ' + st + (err.body ? ': ' + err.body.slice(0,120) : '');
+}
 /* ================= Carga de resultados desde football-data.org API ================= */
 function setPubInfo(msg, warn){
   const el = document.getElementById('pubinfo');
@@ -1048,7 +1114,13 @@ async function fetchFromApi(){
     headers: {'X-Auth-Token': FDORG_KEY},
     cache: 'no-store'
   });
-  if(!resp.ok) throw new Error('HTTP ' + resp.status);
+  if(!resp.ok){
+    let body = '';
+    try{ const j = await resp.json(); body = j.message || JSON.stringify(j); }catch(e){ try{body=await resp.text();}catch(e2){} }
+    const e = new Error('HTTP ' + resp.status);
+    e.status = resp.status; e.body = body;
+    throw e;
+  }
   const data = await resp.json();
   try{ sessionStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), matches: data.matches})); }catch(e){}
   return data.matches;
@@ -1070,14 +1142,15 @@ async function bootstrap(){
       if(document.getElementById('v-partidos').classList.contains('on')) renderPartidos();
     }
   } catch(err){
-    // Sin conexión o API caída: usar lo que haya en localStorage
     const fin = Object.values(state.scores).filter(s=>s.fin).length;
+    const msg = diagMsg(err);
     if(fin > 0){
-      setPubInfo('⚠ API no disponible · mostrando último estado guardado (' + fin + ' partidos)', true);
+      setPubInfo('⚠ API no disponible · ' + msg + ' · mostrando caché (' + fin + ' partidos)', true);
     } else {
-      setPubInfo('⚠ No se pudo conectar a football-data.org. Verifica el API key.', true);
+      setPubInfo('⚠ ' + msg + ' — entra a Admin → 🩺 Diagnóstico para más detalle', true);
     }
     renderGroups(); renderButterfly();
+    if(document.getElementById('v-partidos').classList.contains('on')) renderPartidos();
   }
 }
 bootstrap();
